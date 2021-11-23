@@ -8,7 +8,7 @@ public class cam_move : MonoBehaviour
 {
     public GameObject player;
 
-    private Vector3 offsetPosition = new Vector3(-2f, 1.7f, -0.006847215f); //posizione iniziale camera
+    private Vector3 offsetPosition = new Vector3(-1.4f, 0.8f, -0.0f); //posizione iniziale camera
     //private Quaternion offsetRotation;// = new Vector3(15, 90, 0);
 
     // Start is called before the first frame update
