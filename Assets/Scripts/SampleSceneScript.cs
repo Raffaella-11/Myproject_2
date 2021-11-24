@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class SampleSceneScript : MonoBehaviour {
     // Start is called before the first frame update
@@ -22,6 +23,8 @@ public class SampleSceneScript : MonoBehaviour {
     void Awake () {
         _levelID = GameManager.instance.currentLevel;
         _levelPreviusScore = GameManager.instance.getStarsForLevel(_levelID);
+    
+        //GameObject.Find("LevelLabel").GetComponent<TextMeshPro>().text = "Livello "+_levelID.ToString();
     }
 
 

@@ -3,9 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using PathCreation;
 using UnityEngine.WSA;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
 
 public class train_move : MonoBehaviour
 {
+
+    public TextMeshProUGUI LevelLabel;
+    public TextMeshProUGUI QuestionLabel;
+
+
     public PathCreator pathCreator; //path che il treno seguirà
     
     //dichiaro variabili a cui associo i 2 path diversi
@@ -20,7 +28,15 @@ public class train_move : MonoBehaviour
     private int startTrain = 0; //serve come variabile flag per evitare che il treno parta prima di aver scelto uno dei due path
     private Quaternion offset; //per sistemare la rotazione del trenino lungo il path
     
-    public bool V3Equal(Vector3 a, Vector3 b) //confronta variabile vector3 evitando errori di approssimazione
+    
+    public int _levelID = 0;
+    public int _levelPreviusScore = 0; // sul JSON salviamo solo lo score precedente; alla fine del gioco il currentScore sovrascrive il previousScore
+    public int _levelCurrentScore = 0;
+    public int _worldID = 0; // L'id del mondo/modalità è usato anche per trovare lo sfondo legato a quella modalità (EX. mondo facile: world_background_1.png ...)
+    public int _currentWordIndex = 0; // va da 0 a 9 e la usiamo per ottenere la parola corrente nel livello corrente nel mondo corrente
+
+    
+        public bool V3Equal(Vector3 a, Vector3 b) //confronta variabile vector3 evitando errori di approssimazione
     {
         return Vector3.SqrMagnitude(a - b) < 0.001;
     }
@@ -30,10 +46,22 @@ public class train_move : MonoBehaviour
     private Vector2 startTouch, swipeDelta;
     private bool isDraging = false;
     
+
+
+    void Awake () {
+        _levelID = GameManager.instance.currentLevel;
+        _levelPreviusScore = GameManager.instance.getStarsForLevel(_levelID);
+    
+        QuestionLabel = FindObjectsOfType<TextMeshProUGUI>()[0];
+        LevelLabel = FindObjectsOfType<TextMeshProUGUI>()[3];
+        LevelLabel.SetText("Livello " + _levelID.ToString());
+    }
+
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        Debug.Log("OPENED LEVEL SPECIAL! " + _levelID.ToString() + " - ");
     }
 
     // Update is called once per frame
@@ -85,6 +113,7 @@ public class train_move : MonoBehaviour
             float y = swipeDelta.y;
             if (Mathf.Abs(x) > Mathf.Abs(y))
             {
+                DidSwipe();
                 if (x < 0)//swipe a sinistra
                 {
                     //swipeLeft = true;
@@ -136,10 +165,33 @@ public class train_move : MonoBehaviour
             }
         }
     }
+
+    private void DidSwipe() {
+
+         _currentWordIndex++;
+        Debug.Log("DidSwipe! "+_currentWordIndex.ToString());
+       
+        QuestionLabel.SetText("Domanda "+_currentWordIndex.ToString());   
+
+    }
     
     private void Reset()
     {
         startTouch = swipeDelta = Vector2.zero;
         isDraging = false;
+    }
+
+
+
+    public void OpenNextLevel() {
+        Debug.Log("OPENING NEXT LEVEL! ");
+        //anotherScript.PrepareLevel(levelNumber);
+        GameManager.instance.setLevelStatisticsWithStars(_levelID, _levelCurrentScore);
+        if (_levelCurrentScore > 1) {
+            GameManager.instance.currentLevel = GameManager.instance.currentLevel+1;
+        } else {
+            Debug.Log("Gioco non superato! Riprova ");
+        }
+        SceneManager.LoadScene(2);
     }
 }
