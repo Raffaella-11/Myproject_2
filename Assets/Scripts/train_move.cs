@@ -23,7 +23,7 @@ public class train_move : MonoBehaviour
 
     
     
-    public float speed = 3;
+    public float speed = 2;
     private float distanceTravelled;
     public EndOfPathInstruction end;
     
@@ -202,7 +202,7 @@ public class train_move : MonoBehaviour
         _currentWordIndex++;
         
 
-        if (_currentWordIndex > 3) {
+        if (_currentWordIndex > 10) {
             DidCompleteLevel();
         } else {
             Debug.Log("DidCOMPLETE QUESTIOn! "+_currentWordIndex.ToString());
