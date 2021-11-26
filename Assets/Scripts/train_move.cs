@@ -13,6 +13,7 @@ public class train_move : MonoBehaviour
     public TextMeshProUGUI LevelLabel;
     public TextMeshProUGUI QuestionLabel;
 
+    public Card _currentCard;
 
     public PathCreator pathCreator; //path che il treno seguirà
     
@@ -20,6 +21,9 @@ public class train_move : MonoBehaviour
     public GameObject pathLeftObj; 
     public GameObject pathRightObj;
     public GameObject ResultsPanel;
+
+    public GameObject AnswerImage;
+    public GameObject AnswerWord;
 
     
     
@@ -37,8 +41,6 @@ public class train_move : MonoBehaviour
     public int _levelCurrentScore = 0;
     public int _worldID = 0; // L'id del mondo/modalità è usato anche per trovare lo sfondo legato a quella modalità (EX. mondo facile: world_background_1.png ...)
     public int _currentWordIndex = 0; // va da 0 a 9 e la usiamo per ottenere la parola corrente nel livello corrente nel mondo corrente
-    public int _answeID = -1;
-    public int[] _answersForCurrentLevel;
     
         public bool V3Equal(Vector3 a, Vector3 b) //confronta variabile vector3 evitando errori di approssimazione
     {
@@ -53,10 +55,6 @@ public class train_move : MonoBehaviour
 
 
     void Awake () {
-
-        _answersForCurrentLevel = new int[10] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        ShuffleAnswers();
-        Debug.Log(_answersForCurrentLevel);
         _currentWordIndex = 1;
         _levelID = GameManager.instance.currentLevel;
         _levelPreviusScore = GameManager.instance.getStarsForLevel(_levelID);
@@ -65,16 +63,20 @@ public class train_move : MonoBehaviour
         QuestionLabel.SetText("Domanda "+_currentWordIndex.ToString()); 
         LevelLabel = FindObjectsOfType<TextMeshProUGUI>()[3];
         LevelLabel.SetText("Livello " + _levelID.ToString());
+        addCardQuestion();
+
+
     }
 
-    private int tempGO = 0;
-    public void ShuffleAnswers()  {
-          for (int i = 0; i < _answersForCurrentLevel.Length - 1; i++) {
-              int rnd = Random.Range(i, _answersForCurrentLevel.Length);
-              tempGO = _answersForCurrentLevel[rnd];
-              _answersForCurrentLevel[rnd] = _answersForCurrentLevel[i];
-              _answersForCurrentLevel[i] = tempGO;
-          }
+    
+    void addCardQuestion() {
+        _currentCard = DeckManager.instance.deck[_currentWordIndex];
+        Debug.Log(_currentCard.name);
+        //AnswerImage.Sprite = _currentCard.artwork;
+        //AnswerWord.SetText(_currentCard.name);
+        GameObject.Find("QuestionWord").GetComponent<UnityEngine.UI.Text>().text = _currentCard.name;
+        GameObject.Find("QuestionImage").GetComponent<Image>().sprite = _currentCard.artwork;
+        //AnswerImage
     }
 
     // Start is called before the first frame update
@@ -101,20 +103,7 @@ public class train_move : MonoBehaviour
             Reset();
         }
         #endregion
-        /*#region Mobile Inputs
-        if (Input.touches.Length > 0)
-        {
-            tap = true;
-            isDraging = true;
-            startTouch = Input.touches[0].position;
-        }
-        else if (Input.touches[0].phase == TouchPhase.Ended || Input.touches[0].phase == TouchPhase.Canceled)
-        {
-            isDraging = false;
-            Reset();
-        }
-        #endregion*/ //i mobile inputs danno errori
-        
+
         //Calculate the distance
         swipeDelta = Vector2.zero;
         if (isDraging & startTrain == 0) //impedisce input se treno in movimento
@@ -190,10 +179,11 @@ public class train_move : MonoBehaviour
     private void DidSwipe(bool isLeftSwipe) {
 
         Debug.Log("DidSwipe! ");
-        _answeID = _answersForCurrentLevel[_currentWordIndex];
+        /*
         if (GameManager.instance.IsAnswerCorrect(_levelID, _answeID, isLeftSwipe)) {
             _levelCurrentScore++;
         }
+        */
     }
 
 
@@ -205,6 +195,7 @@ public class train_move : MonoBehaviour
         if (_currentWordIndex > 10) {
             DidCompleteLevel();
         } else {
+            addCardQuestion();
             Debug.Log("DidCOMPLETE QUESTIOn! "+_currentWordIndex.ToString());
             QuestionLabel.SetText("Domanda "+_currentWordIndex.ToString());  
         } 

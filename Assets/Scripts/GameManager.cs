@@ -3,7 +3,7 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour {
 
-public static GameManager instance;
+    public static GameManager instance;
     public int currentLevel = -1;
 
     void Awake () {
