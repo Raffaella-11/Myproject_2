@@ -11,6 +11,10 @@ public class DeckManager : MonoBehaviour
 	private string[] Names_hard= new string[52]{"caffe", "cane", "cappello", "caraffa", "case", "castagna", "cavalli", "cavi", "chela", "chiave", "chiavi", "chiodi", "chitarra", "coccinella", "coccodrillo",  "coda",  "collo",  "colombo",  "corda",  "corvo",  "cozza",  "cuccia", "cuore", "cuscino", "gallina", "gambe", "gambero", "gambo", "ganci", "gatto", "ghepardo", "gheriglio", "ghiacciolo", "ghiande", "ghiro", "gobba", "gomitolo", "gomme", "gorilla", "gregge", "guanto", "gufo", "guinzaglio", "scacchiera", "scarpe", "scatola", "scheletro", "schiuma", "scoiattolo", "scopa", "scorpione", "scudo"};
 	private string[] Names_soft= new string[21]{"cellula", "cerotto", "cervello", "ciabatta","cicogna", "cielo", "cigno", "cinghiale", "cintura",  "cipolla", "gelato", "gemelli", "gengiva", "genio", "gigante", "ginocchio", "giraffa", "gnomi", "sceriffo", "sciarpa", "scimmia"};
 	
+	public bool allowWordsC;
+	public bool allowWordsG;
+	public bool allowWordsSC;
+
 	void Awake () {
         if (instance != null && instance != this) {
             Destroy(this.gameObject);
@@ -19,6 +23,11 @@ public class DeckManager : MonoBehaviour
 
         instance = this; 
         DontDestroyOnLoad(this.gameObject);
+
+
+		allowWordsC = (PlayerPrefs.GetInt("GameAllowWordsC", 0)==1);
+		allowWordsG = (PlayerPrefs.GetInt("GameAllowWordsG", 0)==1);
+		allowWordsSC = (PlayerPrefs.GetInt("GameAllowWordsSC", 0)==1);
     }
 	
     // Start is called before the first frame update
@@ -52,6 +61,10 @@ public class DeckManager : MonoBehaviour
 			index++;
 			//Debug.Log(Names_hard[i].StartsWith("c");
 		}
+
+		Shuffle();
+
+
     }
 
     
@@ -73,8 +86,22 @@ public class DeckManager : MonoBehaviour
 		    deck[A] = a;
 		    deck[B] = b;
 	    }
-}
+	}
 
+	public void ToggleWordsC() {
+		allowWordsC = !allowWordsC;
+		PlayerPrefs.SetInt("GameAllowWordsC", allowWordsC?1:0);
+	}
+	public void ToggleWordsG() {
+		allowWordsG = !allowWordsG;
+		PlayerPrefs.SetInt("GameAllowWordsG", allowWordsC?1:0);
+	}
+	public void ToggleWordsSC() {
+		allowWordsSC = !allowWordsSC;
+		PlayerPrefs.SetInt("GameAllowWordsSC", allowWordsC?1:0);
+	}
+
+	
 
 	
 	
