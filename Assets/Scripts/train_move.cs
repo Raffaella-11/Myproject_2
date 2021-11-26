@@ -123,7 +123,7 @@ public class train_move : MonoBehaviour
             {
                 if (x < 0)//swipe a sinistra
                 {
-                    DidSwipe(true);
+                    DidSwipe(false);
                     //swipeLeft = true;
                     pathCreator = pathLeftObj.GetComponent<PathCreator>(); //cambia path
                     offset = pathCreator.path.GetRotation(1); //cambia offset
@@ -132,7 +132,7 @@ public class train_move : MonoBehaviour
                 }
                 else//swipe a destra
                 {
-                    DidSwipe(false);
+                    DidSwipe(true);
                     //swipeRight = true;
                     pathCreator = pathRightObj.GetComponent<PathCreator>();
                     offset = pathCreator.path.GetRotation(1);
@@ -142,24 +142,6 @@ public class train_move : MonoBehaviour
             }
             Reset();
         }
-        
-        //vecchia versione dei comandi tramite tastiera, usarli per test fururi o errori
-        /*if (Input.GetKey(KeyCode.A) & startTrain == 0) //impedisce input mentre il treno si muove
-        {
-            pathCreator = pathLeftObj.GetComponent<PathCreator>(); //cambia path
-            offset = pathCreator.path.GetRotation(1); //cambia offset
-            
-            distanceTravelled = 0; //azzera la distanza
-            startTrain = 1; //entra nell'if di movimento del treno
-        }
-        if (Input.GetKey(KeyCode.D) & startTrain == 0)
-        {
-            pathCreator = pathRightObj.GetComponent<PathCreator>();
-            offset = pathCreator.path.GetRotation(1);
-            
-            distanceTravelled = 0;
-            startTrain = 1;
-        }*/
 
         //movimento effettivo del treno
         if (startTrain == 1)
@@ -168,7 +150,7 @@ public class train_move : MonoBehaviour
             transform.position = pathCreator.path.GetPointAtDistance(distanceTravelled, end);
             transform.rotation = pathCreator.path.GetRotationAtDistance(distanceTravelled, end) * offset * offset;
 
-            if (V3Equal(transform.position,startPosition))
+            if (V3Equal(transform.position, startPosition))
             {
                 startTrain = 0; //riattiva possibilità input del player
                 DidCompleteQuestion();
@@ -176,14 +158,13 @@ public class train_move : MonoBehaviour
         }
     }
 
-    private void DidSwipe(bool isLeftSwipe) {
-
-        Debug.Log("DidSwipe! ");
-        /*
-        if (GameManager.instance.IsAnswerCorrect(_levelID, _answeID, isLeftSwipe)) {
-            _levelCurrentScore++;
+    private void DidSwipe(bool isSoft) {
+        if (_currentCard.soft == isSoft) {
+            Debug.Log("DidSwipe! Correct Answer!");
+        } else {
+            Debug.Log("DidSwipe! Wrong Answer!");
         }
-        */
+
     }
 
 

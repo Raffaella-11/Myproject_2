@@ -30,7 +30,7 @@ public class DeckManager : MonoBehaviour
 			Card temp = new Card();
 			temp.idx = index;
 			temp.name = Names_soft[i];
-			temp.soft = 1;
+			temp.soft = true;
 			temp.IsC = Names_soft[i].StartsWith("c");
 			temp.IsG = Names_soft[i].StartsWith("g");
 			temp.IsSc = Names_soft[i].StartsWith("sc");
@@ -43,7 +43,7 @@ public class DeckManager : MonoBehaviour
 			Card temp = new Card();
 			temp.idx = index;
 			temp.name = Names_hard[i];
-			temp.soft = 0;
+			temp.soft = false;
 			temp.IsC = Names_hard[i].StartsWith("c");
 			temp.IsG = Names_hard[i].StartsWith("g");
 			temp.IsSc = Names_hard[i].StartsWith("sc");
@@ -85,7 +85,7 @@ public class Card
 {
 	public int idx;
    	public string name; 
-	public int soft;
+	public bool soft;
 	public Sprite artwork;
 	public bool IsC;
 	public bool IsG;

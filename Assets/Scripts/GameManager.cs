@@ -56,25 +56,4 @@ public class GameManager : MonoBehaviour {
         PlayerPrefs.SetInt("CurrentLevel", currentLevel);
         PlayerPrefs.Save();
     }
-
-
-
-    public bool IsAnswerCorrect(int _levelID,int _answeID, bool _isLeftSwipe) {
-
-        if (_levelID == 1) {
-            if (_answeID == 0) { return _isLeftSwipe; } else 
-            if (_answeID == 1) { return _isLeftSwipe; } else 
-            if (_answeID == 2) { return _isLeftSwipe; } else 
-            if (_answeID == 3) { return _isLeftSwipe; } else 
-            if (_answeID == 4) { return _isLeftSwipe; } else 
-            if (_answeID == 5) { return _isLeftSwipe; } else 
-            if (_answeID == 6) { return _isLeftSwipe; } else 
-            if (_answeID == 7) { return _isLeftSwipe; } else 
-            if (_answeID == 8) { return _isLeftSwipe; } else 
-            if (_answeID == 9) { return _isLeftSwipe; } 
-        }
-
-
-        return true;
-    }
 }
