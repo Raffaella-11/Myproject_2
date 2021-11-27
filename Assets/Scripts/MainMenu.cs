@@ -28,4 +28,19 @@ public class MainMenu : MonoBehaviour {
         GameManager.instance.currentLevel = GameManager.instance.currentLevel + 1;
         SceneManager.LoadScene(2);
     }
+
+
+
+    public void ToggleWordsC() {
+        Debug.Log("Toggle C!");
+        DeckManager.instance.ToggleWordsC();
+    }
+    public void ToggleWordsG() {
+        Debug.Log("Toggle G!");
+        DeckManager.instance.ToggleWordsG();
+    }
+    public void ToggleWordsSC() {
+        Debug.Log("Toggle SC!");
+        DeckManager.instance.ToggleWordsSC();
+    }
 }

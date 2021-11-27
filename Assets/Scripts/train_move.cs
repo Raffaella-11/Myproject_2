@@ -12,7 +12,9 @@ public class train_move : MonoBehaviour
 
     public TextMeshProUGUI LevelLabel;
     public TextMeshProUGUI QuestionLabel;
+    public TextMeshProUGUI ScoreLabel;
 
+    public Card _currentCard;
 
     public PathCreator pathCreator; //path che il treno seguirà
     
@@ -21,9 +23,12 @@ public class train_move : MonoBehaviour
     public GameObject pathRightObj;
     public GameObject ResultsPanel;
 
+    public GameObject AnswerImage;
+    public GameObject AnswerWord;
+
     
     
-    public float speed = 3;
+    public float speed = 2;
     private float distanceTravelled;
     public EndOfPathInstruction end;
     
@@ -37,8 +42,6 @@ public class train_move : MonoBehaviour
     public int _levelCurrentScore = 0;
     public int _worldID = 0; // L'id del mondo/modalità è usato anche per trovare lo sfondo legato a quella modalità (EX. mondo facile: world_background_1.png ...)
     public int _currentWordIndex = 0; // va da 0 a 9 e la usiamo per ottenere la parola corrente nel livello corrente nel mondo corrente
-    public int _answeID = -1;
-    public int[] _answersForCurrentLevel;
     
         public bool V3Equal(Vector3 a, Vector3 b) //confronta variabile vector3 evitando errori di approssimazione
     {
@@ -53,28 +56,32 @@ public class train_move : MonoBehaviour
 
 
     void Awake () {
-
-        _answersForCurrentLevel = new int[10] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        ShuffleAnswers();
-        Debug.Log(_answersForCurrentLevel);
-        _currentWordIndex = 1;
+        _currentWordIndex = 0;
         _levelID = GameManager.instance.currentLevel;
         _levelPreviusScore = GameManager.instance.getStarsForLevel(_levelID);
     
+        /*
         QuestionLabel = FindObjectsOfType<TextMeshProUGUI>()[0];
         QuestionLabel.SetText("Domanda "+_currentWordIndex.ToString()); 
         LevelLabel = FindObjectsOfType<TextMeshProUGUI>()[3];
         LevelLabel.SetText("Livello " + _levelID.ToString());
+
+        ScoreLabel = FindObjectsOfType<TextMeshProUGUI>()[4];
+        */
+        addCardQuestion();
+
+
     }
 
-    private int tempGO = 0;
-    public void ShuffleAnswers()  {
-          for (int i = 0; i < _answersForCurrentLevel.Length - 1; i++) {
-              int rnd = Random.Range(i, _answersForCurrentLevel.Length);
-              tempGO = _answersForCurrentLevel[rnd];
-              _answersForCurrentLevel[rnd] = _answersForCurrentLevel[i];
-              _answersForCurrentLevel[i] = tempGO;
-          }
+    
+    void addCardQuestion() {
+        _currentCard = DeckManager.instance.deck[_currentWordIndex];
+        Debug.Log(_currentCard.name);
+        //AnswerImage.Sprite = _currentCard.artwork;
+        //AnswerWord.SetText(_currentCard.name);
+        GameObject.Find("QuestionWord").GetComponent<UnityEngine.UI.Text>().text = _currentCard.name.ToUpper();
+        GameObject.Find("QuestionImage").GetComponent<Image>().sprite = _currentCard.artwork;
+        //AnswerImage
     }
 
     // Start is called before the first frame update
@@ -101,20 +108,7 @@ public class train_move : MonoBehaviour
             Reset();
         }
         #endregion
-        /*#region Mobile Inputs
-        if (Input.touches.Length > 0)
-        {
-            tap = true;
-            isDraging = true;
-            startTouch = Input.touches[0].position;
-        }
-        else if (Input.touches[0].phase == TouchPhase.Ended || Input.touches[0].phase == TouchPhase.Canceled)
-        {
-            isDraging = false;
-            Reset();
-        }
-        #endregion*/ //i mobile inputs danno errori
-        
+
         //Calculate the distance
         swipeDelta = Vector2.zero;
         if (isDraging & startTrain == 0) //impedisce input se treno in movimento
@@ -134,7 +128,7 @@ public class train_move : MonoBehaviour
             {
                 if (x < 0)//swipe a sinistra
                 {
-                    DidSwipe(true);
+                    DidSwipe(false);
                     //swipeLeft = true;
                     pathCreator = pathLeftObj.GetComponent<PathCreator>(); //cambia path
                     offset = pathCreator.path.GetRotation(1); //cambia offset
@@ -143,7 +137,7 @@ public class train_move : MonoBehaviour
                 }
                 else//swipe a destra
                 {
-                    DidSwipe(false);
+                    DidSwipe(true);
                     //swipeRight = true;
                     pathCreator = pathRightObj.GetComponent<PathCreator>();
                     offset = pathCreator.path.GetRotation(1);
@@ -153,24 +147,6 @@ public class train_move : MonoBehaviour
             }
             Reset();
         }
-        
-        //vecchia versione dei comandi tramite tastiera, usarli per test fururi o errori
-        /*if (Input.GetKey(KeyCode.A) & startTrain == 0) //impedisce input mentre il treno si muove
-        {
-            pathCreator = pathLeftObj.GetComponent<PathCreator>(); //cambia path
-            offset = pathCreator.path.GetRotation(1); //cambia offset
-            
-            distanceTravelled = 0; //azzera la distanza
-            startTrain = 1; //entra nell'if di movimento del treno
-        }
-        if (Input.GetKey(KeyCode.D) & startTrain == 0)
-        {
-            pathCreator = pathRightObj.GetComponent<PathCreator>();
-            offset = pathCreator.path.GetRotation(1);
-            
-            distanceTravelled = 0;
-            startTrain = 1;
-        }*/
 
         //movimento effettivo del treno
         if (startTrain == 1)
@@ -179,7 +155,7 @@ public class train_move : MonoBehaviour
             transform.position = pathCreator.path.GetPointAtDistance(distanceTravelled, end);
             transform.rotation = pathCreator.path.GetRotationAtDistance(distanceTravelled, end) * offset * offset;
 
-            if (V3Equal(transform.position,startPosition))
+            if (V3Equal(transform.position, startPosition))
             {
                 startTrain = 0; //riattiva possibilità input del player
                 DidCompleteQuestion();
@@ -187,13 +163,13 @@ public class train_move : MonoBehaviour
         }
     }
 
-    private void DidSwipe(bool isLeftSwipe) {
-
-        Debug.Log("DidSwipe! ");
-        _answeID = _answersForCurrentLevel[_currentWordIndex];
-        if (GameManager.instance.IsAnswerCorrect(_levelID, _answeID, isLeftSwipe)) {
-            _levelCurrentScore++;
+    private void DidSwipe(bool isSoft) {
+        if (_currentCard.soft == isSoft) {
+            Debug.Log("DidSwipe! Correct Answer!");
+        } else {
+            Debug.Log("DidSwipe! Wrong Answer!");
         }
+
     }
 
 
@@ -202,9 +178,10 @@ public class train_move : MonoBehaviour
         _currentWordIndex++;
         
 
-        if (_currentWordIndex > 3) {
+        if (_currentWordIndex > 10) {
             DidCompleteLevel();
         } else {
+            addCardQuestion();
             Debug.Log("DidCOMPLETE QUESTIOn! "+_currentWordIndex.ToString());
             QuestionLabel.SetText("Domanda "+_currentWordIndex.ToString());  
         } 
@@ -214,6 +191,16 @@ public class train_move : MonoBehaviour
         isLevelComplete = true;
         Debug.Log("DidCOMPLETE Level!! "); 
         ResultsPanel.SetActive(true);
+
+        ScoreLabel.SetText("Punti: "+_levelCurrentScore.ToString());
+
+        if (_levelCurrentScore > 8) {
+            // 3 stelle
+        } else if (_levelCurrentScore > 6) {
+            // 2 stelle
+        } else {
+            // 1 stella
+        }
 
         GameManager.instance.setLevelStatisticsWithStars(_levelID, _levelCurrentScore);
         GameManager.instance.currentLevel = GameManager.instance.currentLevel+1;
