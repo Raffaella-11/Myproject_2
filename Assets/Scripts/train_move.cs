@@ -12,6 +12,7 @@ public class train_move : MonoBehaviour
 
     public TextMeshProUGUI LevelLabel;
     public TextMeshProUGUI QuestionLabel;
+    public TextMeshProUGUI ScoreLabel;
 
     public Card _currentCard;
 
@@ -55,14 +56,18 @@ public class train_move : MonoBehaviour
 
 
     void Awake () {
-        _currentWordIndex = 1;
+        _currentWordIndex = 0;
         _levelID = GameManager.instance.currentLevel;
         _levelPreviusScore = GameManager.instance.getStarsForLevel(_levelID);
     
+        /*
         QuestionLabel = FindObjectsOfType<TextMeshProUGUI>()[0];
         QuestionLabel.SetText("Domanda "+_currentWordIndex.ToString()); 
         LevelLabel = FindObjectsOfType<TextMeshProUGUI>()[3];
         LevelLabel.SetText("Livello " + _levelID.ToString());
+
+        ScoreLabel = FindObjectsOfType<TextMeshProUGUI>()[4];
+        */
         addCardQuestion();
 
 
@@ -74,7 +79,7 @@ public class train_move : MonoBehaviour
         Debug.Log(_currentCard.name);
         //AnswerImage.Sprite = _currentCard.artwork;
         //AnswerWord.SetText(_currentCard.name);
-        GameObject.Find("QuestionWord").GetComponent<UnityEngine.UI.Text>().text = _currentCard.name;
+        GameObject.Find("QuestionWord").GetComponent<UnityEngine.UI.Text>().text = _currentCard.name.ToUpper();
         GameObject.Find("QuestionImage").GetComponent<Image>().sprite = _currentCard.artwork;
         //AnswerImage
     }
@@ -186,6 +191,16 @@ public class train_move : MonoBehaviour
         isLevelComplete = true;
         Debug.Log("DidCOMPLETE Level!! "); 
         ResultsPanel.SetActive(true);
+
+        ScoreLabel.SetText("Punti: "+_levelCurrentScore.ToString());
+
+        if (_levelCurrentScore > 8) {
+            // 3 stelle
+        } else if (_levelCurrentScore > 6) {
+            // 2 stelle
+        } else {
+            // 1 stella
+        }
 
         GameManager.instance.setLevelStatisticsWithStars(_levelID, _levelCurrentScore);
         GameManager.instance.currentLevel = GameManager.instance.currentLevel+1;
