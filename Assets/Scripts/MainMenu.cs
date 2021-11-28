@@ -26,7 +26,7 @@ public class MainMenu : MonoBehaviour {
     IEnumerator CorutineOpenNextLevel() {
         yield return new WaitForSeconds(1);
         GameManager.instance.currentLevel = GameManager.instance.currentLevel + 1;
-        SceneManager.LoadScene(2);
+        SceneManager.LoadScene(4);
     }
 
 
